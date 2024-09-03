@@ -1,0 +1,10 @@
+bindPort = 7000
+
+subDomainHost = "yourdomain.ai"
+vhostHTTPPort = 8080
+
+[[httpPlugins]]
+name = "node-handler"
+addr = "hub:1337"
+path = "/inner/frps"
+ops = ["Login", "NewProxy", "CloseProxy", "Ping", "NewWorkConn", "NewUserConn"]
