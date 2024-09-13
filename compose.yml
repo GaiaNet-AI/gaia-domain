@@ -6,8 +6,8 @@ services:
     command: ["redis-server", "--save", "60", "1"]
   hub:
     build:
-      context: https://github.com/GaiaNet-AI/gaia-hub.git#v0.1.0
-    image: gaia-hub:0.1.0
+      context: https://github.com/GaiaNet-AI/gaia-hub.git#v0.1.1
+    image: gaia-hub:0.1.1
     environment:
       - LOG_FILE=/logs/gaia-hub.log
       - DATABASE_URL=/data/gaia-domain.db
@@ -30,7 +30,7 @@ services:
     volumes:
       - ./frps/conf:/app/conf
     ports:
-      - "127.0.0.1:7000:7000"
+      - "0.0.0.0:7000:7000"
       - ":::7000:7000"
     depends_on:
       - hub
@@ -42,7 +42,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./logs/nginx:/logs/nginx
     ports:
-      - "127.0.0.1:80:80"
+      - "0.0.0.0:80:80"
       - ":::443:443"
     depends_on:
       - frps

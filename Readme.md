@@ -6,7 +6,7 @@ Following the steps below will allow you to create your own domain and allow nod
 
 ### Download the repo
 ```shell
-curl -L https://github.com/GaiaNet-AI/gaia-domain/archive/refs/tags/v0.1.0.zip -o gaia-domain.zip
+curl -L https://github.com/GaiaNet-AI/gaia-domain/archive/refs/tags/v0.1.1.zip -o gaia-domain.zip
 unzip gaia-domain.zip -d gaia-domain
 mv gaia-domain/*/* gaia-domain
 ```
