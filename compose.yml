@@ -30,8 +30,7 @@ services:
     volumes:
       - ./frps/conf:/app/conf
     ports:
-      - "0.0.0.0:7000:7000"
-      - ":::7000:7000"
+      - "7000:7000"
     depends_on:
       - hub
   openresty:
@@ -42,8 +41,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./logs/nginx:/logs/nginx
     ports:
-      - "0.0.0.0:80:80"
-      - ":::443:443"
+      - "80:80"
+      - "443:443"
     depends_on:
       - frps
       - hub  

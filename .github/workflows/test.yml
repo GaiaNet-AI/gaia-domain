@@ -1,0 +1,110 @@
+name: Docker Compose Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+    
+    - name: Build and start containers
+      run: |
+        docker compose build
+
+        curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init.sh -o init.sh
+        sh init.sh
+        docker compose up -d
+    
+    - name: Check running containers
+      run: docker ps -a
+
+    - name: Start gaia node container
+      run: |
+        for ci in {1..3}
+        do
+          docker run --add-host=yourdomain.ai:172.17.0.1 --add-host=hub.domain.yourdomain.ai:172.17.0.1 -d --name gaianet-$ci --rm ubuntu:latest tail -f /dev/null
+
+          docker exec gaianet-$ci bash -c "
+            apt update &&
+            apt install -y curl &&
+            curl -sSfL 'https://github.com/GaiaNet-AI/gaianet-node/raw/main/install.sh' | bash &&
+            sed -i 's/pulse.gaianet.ai/hub.domain.yourdomain.ai/g' /root/gaianet/config.json &&
+            sed -i 's/us.gaianet.network/yourdomain.ai/g' /root/gaianet/config.json &&
+            /root/gaianet/bin/gaianet init &&
+            sed -i -E 's/0x[0-9a-zA-Z]+/0x$ci/g' /root/gaianet/config.json &&
+            sed -i -E 's/0x[0-9a-zA-Z]+/0x$ci/g' /root/gaianet/gaia-frp/frpc.toml &&
+            /root/gaianet/bin/gaianet start &&
+            cat /root/gaianet/log/start-gaia-frp.log
+          "
+        done
+    
+    - name: Check API and Calculate Distribution
+      run: |
+        sudo echo "127.0.0.1 hub.domain.yourdomain.ai" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 test.yourdomain.ai" | sudo tee -a /etc/hosts
+
+        for ci in {1..3}
+        do
+          curl -X PUT 'http://hub.domain.yourdomain.ai/domain_nodes' \
+            --header 'Content-Type: application/json' \
+            --data @- <<EOF
+            [
+                {
+                    "domain": "test",
+                    "nodes_weights": [
+                        {
+                            "node_id": "0x$ci",
+                            "weight": 1
+                        }
+                    ]
+                }
+            ]
+        EOF
+        done
+
+        declare -A distribution
+
+        for i in {1..10000}
+        do
+          response=$(curl -s -X GET -I http://test.yourdomain.ai/v1/info)
+          if [ $? -ne 0 ]; then
+            echo "Failed to get response from API on attempt $i"
+            exit 1
+          fi
+          node_domain=$(echo "$response" | grep -i "X-Node-Domain" | cut -d' ' -f2 | tr -d '\r')
+          
+          # Increment the count for this node_domain
+          distribution[$node_domain]=$((${distribution[$node_domain]:-0} + 1))
+          
+          # Print progress every 1000 attempts
+          if (( i % 1000 == 0 )); then
+            echo "Completed $i requests"
+          fi
+        done
+
+        echo "Distribution of X-Node-Domain values:"
+        for node in "${!distribution[@]}"; do
+          count=${distribution[$node]}
+          percentage=$(awk "BEGIN {printf \"%.2f\", ($count / 10000) * 100}")
+          echo "$node: $count times ($percentage%)"
+        done
+
+    - name: Stop containers
+      if: always()
+      run: |
+        for ci in {1..3}
+        do
+          docker stop gaianet-$ci
+        done
+        docker-compose down
