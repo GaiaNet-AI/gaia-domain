@@ -6,8 +6,8 @@ services:
     command: ["redis-server", "--save", "60", "1"]
   hub:
     build:
-      context: https://github.com/GaiaNet-AI/gaia-hub.git#v0.1.1
-    image: gaia-hub:0.1.1
+      context: https://github.com/GaiaNet-AI/gaia-hub.git#v0.1.2
+    image: gaia-hub:0.1.2
     environment:
       - LOG_FILE=/logs/gaia-hub.log
       - DATABASE_URL=/data/gaia-domain.db
