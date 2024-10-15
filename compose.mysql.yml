@@ -54,3 +54,14 @@ services:
     depends_on:
       - frps
       - hub  
+  logrotate:
+    image: blacklabelops/logrotate
+    volumes:
+      - ./logs/nginx:/logs
+      - ./logs/nginx/old:/logs/old
+    environment:
+      - LOGS_DIRECTORIES=/logs
+      - LOGROTATE_OLDDIR=/logs/old
+      - LOGROTATE_COMPRESSION=compress
+      - LOGROTATE_INTERVAL=daily
+      - LOGROTATE_COPIES=10
