@@ -6,7 +6,7 @@ Following the steps below will allow you to create your own domain and allow nod
 
 ### Download the repo
 ```shell
-curl -L https://github.com/GaiaNet-AI/gaia-domain/archive/refs/tags/v0.1.3.zip -o gaia-domain.zip
+curl -L https://github.com/GaiaNet-AI/gaia-domain/archive/refs/tags/v0.1.4.zip -o gaia-domain.zip
 unzip gaia-domain.zip -d gaia-domain
 mv gaia-domain/*/* gaia-domain
 ```
@@ -14,7 +14,11 @@ mv gaia-domain/*/* gaia-domain
 ### Build
 ```shell
 cd gaia-domain
+
+# Using sqlite
 docker compose build
+# Using mysql
+docker compose -f compose.mysql.yml build
 ```
 
 ### Configure
@@ -28,13 +32,21 @@ Note that if your domain name is somedomain.ai, for example, you should add two 
 
 ### Init db
 ```shell
+
+# Using sqlite
 curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init.sh -o init.sh
+# Using mysql
+curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init-mysql.sh -o init.sh
+
 sh init.sh
 ```
 
 ### Run
 ```shell
+# Using sqlite
 docker compose up
+# Using mysql
+docker compose -f compose.mysql.yml up
 ```
 
 If you encountered warning in redis container like this:
