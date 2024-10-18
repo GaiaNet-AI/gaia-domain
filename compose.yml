@@ -59,3 +59,16 @@ services:
       - LOGROTATE_COMPRESSION=compress
       - LOGROTATE_INTERVAL=daily
       - LOGROTATE_COPIES=10
+    depends_on:
+      - openresty
+  vector:
+    build:
+      context: ./vector
+    image: gaia-vector
+    volumes:
+      - ./logs/nginx:/logs/nginx
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - openresty
