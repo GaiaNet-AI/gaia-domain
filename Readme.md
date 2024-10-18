@@ -41,6 +41,13 @@ curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init-mysql.sh
 sh init.sh
 ```
 
+### Setup environment variables
+Setup your AWS access key by environment variables
+```shell
+export AWS_ACCESS_KEY_ID=***
+export AWS_SECRET_ACCESS_KEY=***
+```
+
 ### Run
 ```shell
 # Using sqlite
