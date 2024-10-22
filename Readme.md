@@ -34,11 +34,9 @@ Note that if your domain name is somedomain.ai, for example, you should add two 
 ```shell
 
 # Using sqlite
-curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init.sh -o init.sh
-# Using mysql
-curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init-mysql.sh -o init.sh
-
 sh init.sh
+# Using mysql
+sh init-mysql.sh
 ```
 
 ### Setup environment variables
