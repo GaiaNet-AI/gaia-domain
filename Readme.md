@@ -4,11 +4,9 @@ This project brings you the complete ecosystem of Gaia domain.
 ## Create your own domain
 Following the steps below will allow you to create your own domain and allow nodes to join it.
 
-### Download the repo
+### Clone the repo
 ```shell
-curl -L https://github.com/GaiaNet-AI/gaia-domain/archive/refs/tags/v0.1.4.zip -o gaia-domain.zip
-unzip gaia-domain.zip -d gaia-domain
-mv gaia-domain/*/* gaia-domain
+git clone https://github.com/GaiaNet-AI/gaia-domain.git
 ```
 
 ### Build

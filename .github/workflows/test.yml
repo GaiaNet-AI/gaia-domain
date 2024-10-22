@@ -21,8 +21,6 @@ jobs:
     - name: Build and start containers
       run: |
         docker compose build
-
-        curl -L https://raw.githubusercontent.com/GaiaNet-AI/gaia-hub/main/init.sh -o init.sh
         sh init.sh
         docker compose up -d
     
