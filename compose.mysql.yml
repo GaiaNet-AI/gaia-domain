@@ -11,7 +11,7 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
   hub:
-    image: gaianet/gaia-hub:mysql.v0.1.4
+    image: gaianet/gaia-hub:mysql.v0.1.5
     environment:
       - LOG_FILE=/logs/gaia-hub.log
       - DATABASE_URL=mysql://gaia:${MYSQL_PASSWORD}@mysql/gaia.domain

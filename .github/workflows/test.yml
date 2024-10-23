@@ -35,13 +35,10 @@ jobs:
 
           docker exec gaianet-$ci bash -c "
             apt update &&
-            apt install -y curl &&
+            apt install -y curl jq &&
             curl -sSfL 'https://github.com/GaiaNet-AI/gaianet-node/raw/main/install.sh' | bash &&
-            sed -i 's/pulse.gaianet.ai/hub.domain.yourdomain.ai/g' /root/gaianet/config.json &&
             sed -i 's/us.gaianet.network/yourdomain.ai/g' /root/gaianet/config.json &&
             /root/gaianet/bin/gaianet init &&
-            sed -i -E 's/0x[0-9a-zA-Z]+/0x$ci/g' /root/gaianet/config.json &&
-            sed -i -E 's/0x[0-9a-zA-Z]+/0x$ci/g' /root/gaianet/gaia-frp/frpc.toml &&
             /root/gaianet/bin/gaianet start &&
             cat /root/gaianet/log/start-gaia-frp.log
           "
@@ -54,6 +51,8 @@ jobs:
 
         for ci in {1..3}
         do
+          node_id=$(docker exec gaianet-$ci bash -c "cat /root/gaianet/config.json | jq -r '.address'")
+
           curl -X PUT 'http://hub.domain.yourdomain.ai/domain_nodes' \
             --header 'Content-Type: application/json' \
             --data @- <<EOF
@@ -62,7 +61,7 @@ jobs:
                     "domain": "test",
                     "nodes_weights": [
                         {
-                            "node_id": "0x$ci",
+                            "node_id": "$node_id",
                             "weight": 1
                         }
                     ]

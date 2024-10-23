@@ -5,7 +5,7 @@ services:
       - ./data/redis:/data
     command: ["redis-server", "--save", "60", "1"]
   hub:
-    image: gaianet/gaia-hub:sqlite.v0.1.4
+    image: gaianet/gaia-hub:sqlite.v0.1.5
     environment:
       - LOG_FILE=/logs/gaia-hub.log
       - DATABASE_URL=/data/gaia-domain.db
