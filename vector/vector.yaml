@@ -32,13 +32,16 @@ transforms:
       #.time_local = .parsed.time_local
       .time_local = format_timestamp!(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"), "%Y-%m-%d %H:%M:%S%:z")
       .time_timestamp = to_unix_timestamp(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"))
-      .host = .parsed.host
+      .host = .parsed.node_domain
+      .domain = .parsed.host
       .body_size = .parsed.body_size
       .request_time = .parsed.request_time
       .req_body = .parsed.req_body
       .resp_body = .parsed.resp_body
       .chat_user = .parsed.user
       .chat_id = ""
+      .user_id = .parsed.user_id
+      .key_hash = .parsed.key_hash
 
       # If user is empty or null, try to get it from parsed .req_body
       if is_empty!(.chat_user) {
