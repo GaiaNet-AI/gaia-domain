@@ -28,11 +28,7 @@ services:
       - redis
       - mysql
   frps:
-    build:
-      context: ./frps
-      args:
-        FRP_VERSION: v0.1.1
-    image: gaia-frps:0.1.1
+    image: gaianet/gaia-frp:v0.1.1
     volumes:
       - ./frps/conf:/app/conf
     ports:
@@ -40,10 +36,9 @@ services:
     depends_on:
       - hub
   openresty:
-    build:
-      context: ./nginx
-    image: gaia-openresty
+    image: openresty/openresty:bullseye
     volumes:
+      - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./logs/nginx:/logs/nginx
     ports:
@@ -66,10 +61,9 @@ services:
     depends_on:
       - openresty
   vector:
-    build:
-      context: ./vector
-    image: gaia-vector
+    image: timberio/vector:0.41.1-alpine
     volumes:
+      - ./vector:/etc/vector
       - ./logs/nginx:/logs/nginx
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
