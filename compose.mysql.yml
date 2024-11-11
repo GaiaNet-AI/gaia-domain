@@ -11,7 +11,7 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
   hub:
-    image: gaianet/gaia-hub:mysql.v0.1.6
+    image: gaianet/gaia-hub:mysql.v0.1.7
     environment:
       - LOG_FILE=/logs/gaia-hub.log
       - DATABASE_URL=mysql://gaia:${MYSQL_PASSWORD}@mysql/gaia.domain
@@ -35,8 +35,13 @@ services:
       - "7000:7000"
     depends_on:
       - hub
+  grpc-gateway:
+    image: gaianet/domain-grpc-gateway:v0.1.1
+    environment:
+      - GRPC_SERVER_ENDPOINT=${GRPC_SERVER_ENDPOINT}
+      - GRPC_AUTH_SECRET_KEY=${GRPC_AUTH_SECRET_KEY}
   openresty:
-    image: openresty/openresty:bullseye
+    image: gaianet/gaia-openresty:bullseye
     volumes:
       - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
@@ -46,7 +51,8 @@ services:
       - "443:443"
     depends_on:
       - frps
-      - hub  
+      - hub
+      - grpc-gateway
   logrotate:
     image: blacklabelops/logrotate
     volumes:
