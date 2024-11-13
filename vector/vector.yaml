@@ -20,68 +20,68 @@ sources:
     ignore_older_secs: 600
 
 transforms:
- parse_logs:
-   type: "remap"
-   inputs: ["nginx_access_log_source"]
-   source: |
-      .parsed = parse_json!(string!(.message))
-      .remote_addr = .parsed.remote_addr
-      #.http_user_agent = .parsed.http_user_agent
-      .http_user_agent = replace(string!(.parsed.http_user_agent), ",", "")
-      .http_x_forwarded_for = .parsed.http_x_forwarded_for
-      #.time_local = .parsed.time_local
-      .time_local = format_timestamp!(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"), "%Y-%m-%d %H:%M:%S%:z")
-      .time_timestamp = to_unix_timestamp(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"))
-      .host = .parsed.node_domain
-      if .parsed.node_domain == .parsed.host {
-        .domain = ""
-      } else {
-        .domain = .parsed.host
-      }
-      .body_size = .parsed.body_size
-      .request_time = .parsed.request_time
-      .req_body = .parsed.req_body
-      .resp_body = .parsed.resp_body
-      .chat_user = .parsed.user
-      .chat_id = ""
-      .user_id = .parsed.user_id
-      .key_hash = .parsed.key_hash
+  parse_logs:
+    type: "remap"
+    inputs: ["nginx_access_log_source"]
+    source: |
+       .parsed = parse_json!(string!(.message))
+       .remote_addr = .parsed.remote_addr
+       #.http_user_agent = .parsed.http_user_agent
+       .http_user_agent = replace(string!(.parsed.http_user_agent), ",", "")
+       .http_x_forwarded_for = .parsed.http_x_forwarded_for
+       #.time_local = .parsed.time_local
+       .time_local = format_timestamp!(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"), "%Y-%m-%d %H:%M:%S%:z")
+       .time_timestamp = to_unix_timestamp(parse_timestamp!(.parsed.time_local, "%d/%b/%Y:%H:%M:%S %z"))
+       .host = .parsed.node_domain
+       if .parsed.node_domain == .parsed.host {
+         .domain = ""
+       } else {
+         .domain = .parsed.host
+       }
+       .body_size = .parsed.body_size
+       .request_time = .parsed.request_time
+       .req_body = .parsed.req_body
+       .resp_body = .parsed.resp_body
+       .chat_user = .parsed.user
+       .chat_id = ""
+       .user_id = .parsed.user_id
+       .key_hash = .parsed.key_hash
 
-      # If user is empty or null, try to get it from parsed .req_body
-      if is_empty!(.chat_user) {
-          .req_body_parsed, err = parse_json(.req_body)
-          if err == null && exists(.req_body_parsed.user) {
-            .chat_user = .req_body_parsed.user
-          }
-          del(.req_body_parsed)
-      }
+       # If user is empty or null, try to get it from parsed .req_body
+       if is_empty!(.chat_user) {
+           .req_body_parsed, err = parse_json(.req_body)
+           if err == null && exists(.req_body_parsed.user) {
+             .chat_user = .req_body_parsed.user
+           }
+           del(.req_body_parsed)
+       }
 
 
-      # Initialize token counts to zero
-      .prompt_tokens = 0
-      .completion_tokens = 0
-      .total_tokens = 0
+       # Initialize token counts to zero
+       .prompt_tokens = 0
+       .completion_tokens = 0
+       .total_tokens = 0
 
-        # Handle multiple JSON objects within resp_body
-        .json_objects = split(string!(.resp_body), "data: ")
-        for_each(.json_objects) -> |_, json_obj| {
-          if match(json_obj, r'.*prompt_tokens.*') {
-            .json_parsed, _ = parse_json(json_obj)
-      .prompt_tokens = .json_parsed.usage.prompt_tokens
-      .completion_tokens = .json_parsed.usage.completion_tokens
-      .total_tokens = .json_parsed.usage.total_tokens
-            del(.json_parsed)
-            }
-        }
+         # Handle multiple JSON objects within resp_body
+         .json_objects = split(string!(.resp_body), "data: ")
+         for_each(.json_objects) -> |_, json_obj| {
+           if match(json_obj, r'.*prompt_tokens.*') {
+             .json_parsed, _ = parse_json(json_obj)
+       .prompt_tokens = .json_parsed.usage.prompt_tokens
+       .completion_tokens = .json_parsed.usage.completion_tokens
+       .total_tokens = .json_parsed.usage.total_tokens
+             del(.json_parsed)
+             }
+         }
 
-      del(.req_body)
-      del(.json_objects)
-      del(.message)
-      del(.parsed)
-      del(.file)
-      del(.resp_body)
-      del(.source_type)
-      del(.timestamp)
+       del(.req_body)
+       del(.json_objects)
+       del(.message)
+       del(.parsed)
+       del(.file)
+       del(.resp_body)
+       del(.source_type)
+       del(.timestamp)
 
 sinks:
   s3_sink:
