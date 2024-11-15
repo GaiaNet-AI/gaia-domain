@@ -29,6 +29,11 @@ CREATE TABLE node_status (
   arch varchar(128) NOT NULL,
   os varchar(128) NOT NULL,
   client_address varchar(256) NOT NULL,
+  geo_coordinates varchar(256) DEFAULT "",
+  location varchar(256) DEFAULT "",
+  country varchar(28) DEFAULT "",  
+  subdivision varchar(28) DEFAULT "", 
+  city varchar(28) DEFAULT "",
   login_time TIMESTAMP,
   last_active_time TIMESTAMP,
   last_avail_time TIMESTAMP,
@@ -46,7 +51,10 @@ CREATE TABLE node_status (
   INDEX idx_status (status),
   INDEX idx_login_time (login_time),
   INDEX idx_last_active_time (last_active_time),
-  INDEX idx_last_avail_time (last_avail_time)
+  INDEX idx_last_avail_time (last_avail_time),
+  INDEX idx_country (country),
+  INDEX idx_subdivision (subdivision),
+  INDEX idx_city (city)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE domain_nodes (

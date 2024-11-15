@@ -48,6 +48,11 @@ CREATE TABLE node_status (
   arch varchar NOT NULL,
   os varchar NOT NULL,
   client_address varchar NOT NULL,
+  geo_coordinates varchar DEFAULT "",
+  location varchar DEFAULT "",
+  country varchar DEFAULT "",  
+  subdivision varchar DEFAULT "", 
+  city varchar DEFAULT "",
   login_time bigint,
   last_active_time bigint,
   last_avail_time bigint,
@@ -65,6 +70,9 @@ CREATE INDEX idx_status ON node_status (status);
 CREATE INDEX idx_login_time ON node_status (login_time);
 CREATE INDEX idx_last_active_time ON node_status (last_active_time);
 CREATE INDEX idx_last_avail_time ON node_status (last_avail_time);
+CREATE INDEX idx_country ON node_status (country);
+CREATE INDEX idx_subdivision ON node_status (subdivision);
+CREATE INDEX idx_city ON node_status (city);
 
 CREATE TABLE domain_nodes (
   domain varchar NOT NULL,
