@@ -58,6 +58,7 @@ CREATE TABLE node_status (
   last_avail_time bigint,
   run_id varchar DEFAULT "",
   meta text,
+  hardware text,
   node_version varchar DEFAULT "",
   chat_model varchar DEFAULT "",
   embedding_model varchar DEFAULT "",

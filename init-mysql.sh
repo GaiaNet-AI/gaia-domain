@@ -39,6 +39,7 @@ CREATE TABLE node_status (
   last_avail_time TIMESTAMP,
   run_id varchar(256) DEFAULT "",
   meta JSON,
+  hardware JSON,
   node_version varchar(20) DEFAULT "",
   chat_model varchar(256) DEFAULT "",
   embedding_model varchar(256) DEFAULT "",
