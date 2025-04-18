@@ -128,6 +128,12 @@ For a Gaia node to join your newly created domain, a configuration change is req
 Edit the `config.json` file on the Gaia node:
 
 - Change the `domain` field to your **root domain name** (e.g., `"domain": "yourdomain.ai"`).
+
+```bash
+git config \
+ --domain "yourdomain.ai"
+```
+
 - Modify the domain in the `server_health_url` and `server_info_url` fields to point to your hub: `"server_health_url": "http://hub.domain.yourdomain.ai/node-health"` and `"server_info_url": "http://hub.domain.yourdomain.ai/node-info"`.
 
 ## 🤝 Contributing to Gaia Domain
