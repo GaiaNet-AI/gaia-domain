@@ -134,8 +134,6 @@ git config \
  --domain "yourdomain.ai"
 ```
 
-- Modify the domain in the `server_health_url` and `server_info_url` fields to point to your hub: `"server_health_url": "http://hub.domain.yourdomain.ai/node-health"` and `"server_info_url": "http://hub.domain.yourdomain.ai/node-info"`.
-
 ## 🤝 Contributing to Gaia Domain
 
 Gaia Domain is an open-source project, and contributions from the community are highly valued! We believe in collaborative development to build a robust and innovative platform.
