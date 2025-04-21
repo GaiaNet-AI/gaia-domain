@@ -1,77 +1,157 @@
 ## Gaia Domain
+
 This project brings you the complete ecosystem of Gaia domain.
 
-## Create your own domain
-Following the steps below will allow you to create your own domain and allow nodes to join it.
+## Getting started with `gaia-domain`
 
-### Clone the repo
-```shell
-git clone https://github.com/GaiaNet-AI/gaia-domain.git
-```
+Follow these steps to establish your domain and allow Gaia nodes to join your network.
 
-### Build
-```shell
-cd gaia-domain
+### Prerequisites
 
-# Using sqlite
-docker compose build
-# Using mysql
-docker compose -f compose.mysql.yml build
-```
+- **Docker:** Ensure you have Docker and Docker Compose installed on your system. ([Install Docker](https://docs.docker.com/engine/install/))
+- **Domain Name:** You'll need a registered domain name (e.g., `yourdomain.ai`).
+- **DNS Management Access:** Access to your domain name provider's DNS settings.
+- **AWS Credentials (Optional):** Required if you intend to use the logging features with AWS S3.
 
-### Configure
-Change `yourdomain.ai` to your domain name in the following files:
-- frps/conf/frps.toml
-- nginx/conf.d/domain.conf
-- nginx/conf.d/hub.conf
+### ⚙️ Installation
 
-Then at your domain provider, add the DNS record to your host IP.
-Note that if your domain name is somedomain.ai, for example, you should add two A record with the name `somedomain.ai` and `*`. 
+1.  **Clone the Repository:**
 
-### Init db
-```shell
+    ```shell
+    git clone [https://github.com/GaiaNet-AI/gaia-domain.git](https://github.com/GaiaNet-AI/gaia-domain.git)
+    cd gaia-domain
+    ```
 
-# Using sqlite
-sh init.sh
-# Using mysql
-sh init-mysql.sh
-```
+2.  **Build the Docker Containers:**
 
-### Setup environment variables
-Setup your AWS access key by environment variables
-```shell
-export AWS_ACCESS_KEY_ID=***
-export AWS_SECRET_ACCESS_KEY=***
-```
-Or create a `.env` file with content:
-```.env
-AWS_ACCESS_KEY_ID=***
-AWS_SECRET_ACCESS_KEY=***
-```
+    Choose your preferred database backend:
 
-### Run
-```shell
-# Using sqlite
-docker compose up
-# Using mysql
-docker compose -f compose.mysql.yml up
-```
+    - **Using SQLite (Easy Setup):**
 
-If you encountered warning in redis container like this:
-```
-	# WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition.
-	Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328.
-	To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
-```
-Run following command to fix it:
+      ```shell
+      docker compose build
+      ```
+
+    - **Using MySQL (Scalable and Robust):**
+
+      ```shell
+      docker compose -f compose.mysql.yml build
+      ```
+
+3.  **Configuration: Setting Up Your Domain:**
+
+    Adapt the configuration files to reflect your chosen domain name (`yourdomain.ai`). Replace all instances of `yourdomain.ai` with your actual domain in the following files:
+
+    - `frps/conf/frps.toml`
+    - `nginx/conf.d/domain.conf`
+    - `nginx/conf.d/hub.conf`
+    - `nginx/conf.d/grpc.conf` (specifically the `server_name`)
+
+    **DNS Records:** At your domain provider, configure the following DNS A records to point to the **IP address of your server** hosting the Gaia Domain:
+
+    - `yourdomain.ai`
+    - `*.yourdomain.ai`
+
+    This ensures that both your root domain and any subdomains can be resolved to your server.
+
+4.  **Initialize the Database:**
+
+    Run the appropriate script to set up the database schema:
+
+    - **Using SQLite:**
+
+      ```shell
+      sh init.sh
+      ```
+
+    - **Using MySQL:**
+
+      ```shell
+      sh init-mysql.sh
+      ```
+
+5.  **Environment Variables (AWS Credentials):**
+
+    If you want to enable logging to AWS S3, you need to provide your AWS access keys. You can do this in two ways:
+
+    - **Export as Environment Variables:**
+
+      ```shell
+      export AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+      export AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+      ```
+
+    - **Create a `.env` File:**
+
+      Create a file named `.env` in the root of the repository with the following content:
+
+      ```.env
+      AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+      ```
+
+    Docker Compose will automatically load these variables.
+
+6.  **Launch Your Gaia Domain:**
+
+    Start the Docker containers to bring your domain online:
+
+    - **Using SQLite:**
+
+      ```shell
+      docker compose up -d
+      ```
+
+    - **Using MySQL:**
+
+      ```shell
+      docker compose -f compose.mysql.yml up -d
+      ```
+
+7.  **(Optional) Redis Warning Fix:**
+
+    If you encounter a warning in the Redis container related to memory overcommit, you can resolve it by running the following commands on your host machine:
+
+    ```bash
+    echo 'vm.overcommit_memory = 1' | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p
+    ```
+
+    **Note:** This requires `sudo` privileges.
+
+That's all!
+
+## Connecting Gaia Nodes to Your Domain
+
+For a Gaia node to join your newly created domain, a configuration change is required on the node's side **before** running the `gaianet init` command on the node.
+
+Edit the `config.json` file on the Gaia node:
+
+- Change the `domain` field to your **root domain name** (e.g., `"domain": "yourdomain.ai"`).
+
 ```bash
-echo 'vm.overcommit_memory = 1' | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
+git config \
+ --domain "yourdomain.ai"
 ```
 
-That's all. Your Gaia domain has started up.
-In order for a Gaia node to join your domain, one thing needs to be changed on the node side before running "gaianet init".
+## 🤝 Contributing to Gaia Domain
 
-- config.json
-	The `domain` field should be change to your root domain name.
-	The domain of `server_health_url` and `server_info_url` fields should be changed to `hub.domain.yourdomain` which exists in your hub.conf.
+Gaia Domain is an open-source project, and contributions from the community are highly valued! We believe in collaborative development to build a robust and innovative platform.
+
+**How You Can Contribute:**
+
+- **Reporting Issues:** If you encounter bugs, have feature requests, or find areas for improvement, please open a detailed issue on [GitHub Issues](https://github.com/GaiaNet-AI/gaia-domain/issues).
+- **Submitting Pull Requests:** We welcome code contributions! If you've implemented a bug fix or a new feature, submit a pull request following our [Contribution Guidelines](https://github.com/Gaianet-AI/gaianet-domain/blob/main/CONTRIBUTING.md). Please ensure your code adheres to the project's style and includes relevant tests.
+- **Documentation:** Help us improve [the documentation](https://docs.gaianet.ai/intro) by clarifying existing sections, adding new guides, or translating the documentation into other languages.
+- **Testing:** Contribute by writing new unit, integration, or end-to-end tests to ensure the stability and reliability of the project.
+- **Community Support:** Assist other builders by answering questions on GitHub issues or our [Telegram builders' Community](https://t.me/+a0bJInD5lsYxNDJl).
+
+Please take a look at our [Code of Conduct](https://github.com/Gaianet-AI/gaianet-domain/blob/main/CODE_OF_CONDUCT.md) to ensure a positive and inclusive environment for everyone.
+
+## 📜 License
+
+This project is licensed under the [GNU General Public License v3.0](https://github.com/GaiaNet-AI/gaia-domain/blob/main/LICENSE)
+
+## Acknowledgements
+
+We'd like to thank the open-source community for their invaluable tools and libraries that make this project possible.
